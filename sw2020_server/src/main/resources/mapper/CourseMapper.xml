@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.dao.CourseMapper">
+	<insert id="addCourse" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO course_table
+		(name, teacher, max_vol,
+		destination,
+		start_time, end_time)
+		VALUES(#{name},#{teacherId},#{maxVol},#{destination},#{startTime},#{endTime})
+	</insert>
+	<delete id="deleteCourse">
+		DELETE FROM course_table
+		WHERE id=#{id}
+	</delete>
+	<select id="queryCourse">
+		SELECT
+	</select>
+	<select id="queryCourseTeacher">
+		SELECT teacher
+		FROM course_table
+		WHERE id=#{courseId}
+	</select>
+	<select id="queryCourseByStudentId" resultMap="course">
+		SELECT *
+		FROM course_table, course_student
+		WHERE
+		student=#{studentId} and id=course
+	</select>
+	
+	<select id="queryCourseByTeacherId" resultMap="course">
+		SELECT *
+		FROM course_table
+		WHERE teacher=#{teacherId}
+	</select>
+	
+	<resultMap type="Course" id="course">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="teacher_id" property="teacherId" />
+		<result column="max_vol" property="maxVol" />
+		<result column="destination" property="destination" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="real_vol" property="realVol" />
+	</resultMap>
+	
+	<select id="getStudentByCourse" resultType="String">
+		SELECT
+		student
+		FROM
+		course_student
+		WHERE course={courseId}
+	</select>
+
+	<select id="queryCode" resultType="courseCode">
+		SELECT *
+		FROM
+		enroll_table
+		WHERE
+		code=#{code}
+	</select>
+
+	<select id="queryCodeByCourse" resultType="courseCode">
+		SELECT *
+		FROM
+		enroll_table
+		WHERE course_id=#{courseId}
+	</select>
+
+	<resultMap type="CourseCode" id="courseCode">
+		<id column="code" property="code" />
+		<result column="course_id" property="courseId" />
+		<result column="due_time" property="dueTime" />
+	</resultMap>
+
+	<insert id="enroll">
+		INSERT INTO course_student
+		VALUES(#{student},
+		#{course})
+	</insert>
+
+	<update id="updateCourseCountPlus">
+		UPDATE course_table
+		SET real_vol = real_vol + 1
+		WHERE
+		id=#{courseId}
+	</update>
+
+
+	<update id="updateCourseCountMinus">
+		UPDATE course_table
+		SET real_vol = real_vol - 1
+		WHERE
+		id=#{courseId}
+	</update>
+
+	<select id="queryCourseRealVol" resultType="int">
+		SELECT real_vol
+		FROM
+		course_table
+		WHERE id=#{courseId}
+	</select>
+
+	<select id="queryCourseMaxVol" resultType="int">
+		SELECT max_vol
+		FROM
+		course_table
+		WHERE id=#{courseId}
+	</select>
+
+	<select id="isStudentInCourse" resultType="String">
+		SELECT course
+		FROM
+		course_student
+		WHERE course=#{courseId} and student=#{studentId}
+	</select>
+
+	<delete id="dropCourse">
+		DELETE FROM course_student
+		WHERE student=#{studentId}
+		and course=#{courseId}
+	</delete>
+
+	<insert id="addCode">
+		INSERT INTO enroll_table
+		VALUES(#{code}, #{courseId},
+		#{dueTime})
+	</insert>
+
+</mapper>
